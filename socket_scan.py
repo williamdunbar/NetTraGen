@@ -168,7 +168,7 @@ def connect_scan(port):
         try:
             s.connect((dst_ip, port))
             try:
-                service = services[str(port)]
+                service = getservbyport(port, "tcp")
             except:
                 service = '----'
             with print_lock:
@@ -222,24 +222,8 @@ def threader_receiver():
         # print("DST PORT: " + str(myreceive.rc_dst_port))
         
         if (myreceive.eth_protocol == 0x0800) and (myreceive.rc_src_ip == dst_ip) and (myreceive.trans_protocol == 6) :
-            # print("SRC PORT: " + str(myreceive.rc_src_port))
-            # print(str(myreceive.rc_src_ip))
-            # print(str(dst_ip))
-            # print("0 " + bin(myreceive.tcp_h_unp[0]))
-            # print("1 "+  bin(myreceive.tcp_h_unp[1]))
-            # print("2 "+bin(myreceive.tcp_h_unp[2]))
-            # print("3 "+bin(myreceive.tcp_h_unp[3]))
-            # print("4 "+bin(myreceive.tcp_h_unp[4]))
-            # print("5 "+bin(myreceive.tcp_h_unp[5]))
-            # print("6 "+bin(myreceive.tcp_h_unp[6]))
-            # print("FIN: "+ str(myreceive.fin))
-            # print("SYN: "+ str(myreceive.syn))
-            # print("RST: "+ str(myreceive.rst))
-            # print("PSH: "+ str(myreceive.psh))
-            # print("ACK: "+ str(myreceive.ack))
-            # print("URG: "+ str(myreceive.urg))
             try:
-                service = services[str(myreceive.rc_src_port)]
+                service = getservbyport(myreceive.rc_src_port, "tcp")
             except:
                 service = '----'
 
@@ -249,7 +233,7 @@ def threader_receiver():
                 # If an RST comes back, the port is classified "unfiltered".
                 # If nothing comes back, the port is said to be "filtered".
                 # This scan type can help determine if a firewall is stateless (just blocks incoming SYN packets) or stateful (tracks connections and also blocks unsolicited ACK packets).
-                print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'unfiltered'))
+                print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Unfiltered'))
 
             elif scan_method == 3:
                 # If SYN/ACK is received, the port is open.
@@ -257,8 +241,8 @@ def threader_receiver():
                     print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Open'))
                 # If RST is received, the port is close.
                 elif myreceive.rst == 1:
-                    print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Close'))
-
+                    # print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Close'))
+                    None
             elif scan_method == 4:
                 # FIN scan will work against any system where the TCP/IP implementation follows RFC 793
                 # On some systems, a closed port responds with an RST upon receiving FIN packets
@@ -273,10 +257,11 @@ def threader_receiver():
                 if myreceive.rst == 1:
                     # If TCP RST response with zero window field is received, the port is close.
                     if myreceive.rwnd == 0:
-                        print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'close'))
+                        # print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'close'))
+                        None
                     # If TCP RST response with non-zero window field is received, the port is open.
                     else:
-                        print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'open'))
+                        print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Open'))
 
 
 def UserInput():
