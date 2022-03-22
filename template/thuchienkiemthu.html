@@ -20,7 +20,7 @@
 
   <!-- Fonts  -->
   <link href='http://fonts.googleapis.com/css?family=Raleway:400,500,600,700,300' rel='stylesheet' type='text/css'>
-
+  <link rel="stylesheet" href="/template/assets/css/app/new.css">
   <!-- Base Styling  -->
   <link rel="stylesheet" href="assets/css/app/app.v1.css" />
 
@@ -97,8 +97,10 @@
             <li><a href="ketqua.html">KẾT QUẢ</a></li>
           </ul>
         </li>
-        <li class="has-submenu"><a href="baocao.html"><i class="fa fa-file-text-o"></i> <span class="nav-label">BÁO CÁO</span></a></li>
-        <li class="has-submenu"><a href="console.html"><i class="fa fa-heart-o"></i> <span class="nav-label">CONSOLE</span></a></li>
+        <li class="has-submenu"><a href="baocao.html"><i class="fa fa-file-text-o"></i> <span class="nav-label">BÁO
+              CÁO</span></a></li>
+        <li class="has-submenu"><a href="console.html"><i class="fa fa-heart-o"></i> <span
+              class="nav-label">CONSOLE</span></a></li>
 
       </ul>
     </nav>
@@ -130,7 +132,7 @@
         <h1>THỰC HIỆN KIỂM THỬ</h1>
       </div>
 
-      <div class="row">
+      <!-- <div class="row">
 
         <div class="col-md-12">
           <div class="panel panel-default">
@@ -193,9 +195,133 @@
             </div>
           </div>
         </div>
+      </div> -->
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">Not Empty validator</div>
+            <div class="panel-body">
+
+
+              <form method="post" class="form-horizontal validator-form" action="#">
+                <div class="form-group">
+                  <label class="col-lg-3 control-label" id="label_kiem_thu">Kiem thu</label>
+                  <div class="col-lg-9">
+                    <select class="form-control" name="country">
+                      <option value="">Kiem thu tong hop</option>
+                      <option value="scan">Scanning</option>
+                      <option value="flood">Flooding</option>
+                      <option value="Poison">Poisoning</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-lg-3 control-label">Loai tan cong</label>
+                  <div class="col-lg-9">
+                    <select class="form-control" name="country">
+                      <option value="">-- Select a country --</option>
+                      <option value="fr">France</option>
+                      <option value="de">Germany</option>
+                      <option value="it">Italy</option>
+                      <option value="jp">Japan</option>
+                      <option value="ru">Russia</option>
+                      <option value="gb">United Kingdom</option>
+                      <option value="us">United State</option>
+                    </select>
+                  </div>
+                </div>
+
+
+
+
+              </form>
+            </div>
+          </div>
+
+          <div class="panel panel-default">
+            <div class="panel-heading">Inline Form</div>
+            <div class="panel-body">
+              <form class="form-group" role="form">
+                <div class="form-group has-feedback">
+                  <label class="control-label">Email address</label>
+                  <input type="text" class="form-control" name="email" data-bv-field="email"
+                    placeholder="williamdunbar2000@gmail.com"><i class="form-control-feedback" data-bv-icon-for="email"
+                    style="display: none;"></i>
+                  <small class="help-block" data-bv-validator="emailAddress" data-bv-for="email"
+                    data-bv-result="NOT_VALIDATED" style="display: none;">The input is not a valid email address</small>
+                </div>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox"> Remember me
+                  </label>
+                </div>
+                <button type="submit" class="btn btn-success" style="margin: auto; display: block;">Sign in</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">Config</div>
+            <div class="panel-body">
+              <div class="row">
+                <div class="col-lg-6">
+                  <label class="control-label">Source IP</label>
+                  <input type="text" class="form-control" name="src_IP" placeholder="192.168.133.140"
+                    data-bv-field="firstName">
+                </div>
+                <div class="col-lg-6">
+                  <label class="control-label">Destinate IP</label>
+                  <input type="text" class="form-control" name="dst_IP" placeholder="IP or Url"
+                    data-bv-field="firstName">
+                </div>
+              </div>
+              <hr class="dotted">
+              <div class="row">
+                <div class="col-lg-6">
+                  <label class="control-label">Port min</label>
+                  <input type="text" class="form-control" name="min_port" placeholder="1,2,3,4,..."
+                    data-bv-field="firstName">
+                </div>
+                <div class="col-lg-6">
+                  <label class="control-label">Port max</label>
+                  <input type="text" class="form-control" name="max_port" placeholder="1024,etc"
+                    data-bv-field="firstName">
+                </div>
+              </div>
+              <hr class="dotted">
+              <div class="row">
+                <div class="col-lg-6">
+                  <label class="control-label">Thread number</label>
+                  <input type="text" class="form-control" name="min_port" placeholder="from 1 to 500 default is 50"
+                    data-bv-field="firstName">
+                </div>
+                <div class="col-lg-6">
+                  <label class="control-label">Delay Processing</label>
+                  <input type="text" class="form-control" name="max_port" placeholder="default is 1"
+                    data-bv-field="firstName">
+                </div>
+              </div>
+              <hr class="dotted">
+              <div class="form-group" width="542px">
+                <div class="col-lg-9 col-lg-offset-3 flex_class">
+                  <button type="submit" class="btn btn-primary" s >Confirm</button>
+
+                  <button type="submit" class="btn btn-primary"
+                    style="margin: auto; background-color: red;">Reset</button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
       </div>
-    </div>
-    <!-- Warper Ends Here (working area) -->
+      <!-- Warper Ends Here (working area) -->
 
 
   </section>

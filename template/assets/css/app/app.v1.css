@@ -1251,7 +1251,7 @@ Panel Styling
 	position:absolute;
 	height:11px;
 	width:11px;
-	border-color:inherit;
+	border-color:REVERT;
 	border-style:solid;
 	border-width:11px;
 	border-top-color:transparent;
@@ -1272,7 +1272,7 @@ Panel Styling
 /**Top Right Arrow**/
 .dropdown-menu.arrow.arrow-top-right:after,
 .dropdown-menu.arrow.arrow-top-right:before{
-	border-bottom-color:inherit;
+	border-bottom-color:REVERT;
 	right:6px;
 	left:auto;}
 	
@@ -1289,7 +1289,7 @@ Panel Styling
 /**Top Left Arrow**/
 .dropdown-menu.arrow.arrow-top-left:after,
 .dropdown-menu.arrow.arrow-top-left:before{
-	border-bottom-color:inherit;
+	border-bottom-color:REVERT;
 	left:6px;
 	left:auto;}
 	

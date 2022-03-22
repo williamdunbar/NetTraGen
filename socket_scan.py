@@ -268,7 +268,8 @@ def UserInput():
     #Cài đặt tham số khi dùng trên terminal
     parser = argparse.ArgumentParser("MTA SCANNING TOOL")
     parser.add_argument("-t", "--target", help="Specify target IP", required=False)
-    parser.add_argument("-p", "--ports", type=int, nargs="+")
+    parser.add_argument("-n", "--min", type=int, required=False)
+    parser.add_argument("-x", "--max", type=int, required=False)
     parser.add_argument("-s", "--scantype", help="Scan type, connect/ack/syn/fin/window", required=False)
     parser.add_argument("-d", "--delay", help="Processing Delay", required=False)
     args = parser.parse_args()
@@ -279,17 +280,23 @@ def UserInput():
         try:
             target = gethostbyname(arg_target )
         except (UnboundLocalError, gaierror):
-            print("\n[-]Invalid format. Please use a correct IP or web address[-]\n")
+            print("\n[-]Invalid format. Please use a correct IP or web address[-]\n")       
             sys.exit()
         if args.scantype:
             scantype = args.scantype.lower()
         else:
             print("Scan type, connect/ack/syn/fin/window")
             sys.exit()
-        if args.ports:
-            ports = args.ports
+        if args.min:
+            if args.max:
+                ports = range(int(args.min), int(args.max))
+                print("khon")
+            else:
+                ports = range(1,1024)
+                print("ngu")
         else:
-            ports = range(1, 1024)
+            ports = range(1,1024)
+            print("ngu")
         if args.delay:
             processing_delay = args.delay
         else:
