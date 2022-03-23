@@ -8,8 +8,6 @@ $(document).ready(function() {
     $('#basic-datatable').dataTable();
 	
 	
-	
-	
 	/************************************
 	Toggle Column
 	************************************/
