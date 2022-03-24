@@ -189,56 +189,142 @@
         <div class="col-md-6">
           <div class="panel panel-default">
             <div class="panel-heading">Cấu hình</div>
+            
             <div class="panel-body">
-              <div class="row">
-                <div class="col-lg-6">
-                  <label class="control-label">Source IP</label>
-                  <input type="text" class="form-control" name="src_IP" placeholder="192.168.133.140"
-                    data-bv-field="firstName">
+              <!-- Scan Form -->
+              <div id="scan-form">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <label class="control-label">Source IP</label>
+                    <input type="text" class="form-control" name="src_IP" placeholder="192.168.133.140"
+                      data-bv-field="firstName">
+                  </div>
+                  <div class="col-lg-6">
+                    <label class="control-label">Destinate IP</label>
+                    <input type="text" class="form-control" name="dst_IP" placeholder="IP or Url"
+                      data-bv-field="firstName">
+                  </div>
                 </div>
-                <div class="col-lg-6">
-                  <label class="control-label">Destinate IP</label>
-                  <input type="text" class="form-control" name="dst_IP" placeholder="IP or Url"
-                    data-bv-field="firstName">
+                <hr class="dotted">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <label class="control-label">Port min</label>
+                    <input type="text" class="form-control" name="min_port" placeholder="1,2,3,4,..."
+                      data-bv-field="firstName">
+                  </div>
+                  <div class="col-lg-6">
+                    <label class="control-label">Port max</label>
+                    <input type="text" class="form-control" name="max_port" placeholder="1024,etc"
+                      data-bv-field="firstName">
+                  </div>
                 </div>
-              </div>
-              <hr class="dotted">
-              <div class="row">
-                <div class="col-lg-6">
-                  <label class="control-label">Port min</label>
-                  <input type="text" class="form-control" name="min_port" placeholder="1,2,3,4,..."
-                    data-bv-field="firstName">
+                <hr class="dotted">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <label class="control-label">Thread number</label>
+                    <input type="text" class="form-control" name="min_port" placeholder="from 1 to 500 default is 50"
+                      data-bv-field="firstName">
+                  </div>
+                  <div class="col-lg-6">
+                    <label class="control-label">Delay Processing</label>
+                    <input type="text" class="form-control" name="max_port" placeholder="default is 1"
+                      data-bv-field="firstName">
+                  </div>
                 </div>
-                <div class="col-lg-6">
-                  <label class="control-label">Port max</label>
-                  <input type="text" class="form-control" name="max_port" placeholder="1024,etc"
-                    data-bv-field="firstName">
+                <hr class="dotted">
+                <div class="form-group" width="542px">
+                  <div class="col-lg-9 col-lg-offset-3 flex_class">
+                    <button type="submit" class="btn btn-primary" s >Kiểm thử</button>
+  
+                    <button type="submit" class="btn btn-primary"
+                      style="margin: auto; background-color: red;">Reset</button>
+                  </div>
                 </div>
-              </div>
-              <hr class="dotted">
-              <div class="row">
-                <div class="col-lg-6">
-                  <label class="control-label">Thread number</label>
-                  <input type="text" class="form-control" name="min_port" placeholder="from 1 to 500 default is 50"
-                    data-bv-field="firstName">
-                </div>
-                <div class="col-lg-6">
-                  <label class="control-label">Delay Processing</label>
-                  <input type="text" class="form-control" name="max_port" placeholder="default is 1"
-                    data-bv-field="firstName">
-                </div>
-              </div>
-              <hr class="dotted">
-              <div class="form-group" width="542px">
-                <div class="col-lg-9 col-lg-offset-3 flex_class">
-                  <button type="submit" class="btn btn-primary" s >Kiểm thử</button>
 
-                  <button type="submit" class="btn btn-primary"
-                    style="margin: auto; background-color: red;">Reset</button>
-                </div>
               </div>
+              <!-- Flood Form -->
+              <div id="flood-form" style="display: none;">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <label class="control-label">Source IP</label>
+                    <input type="text" class="form-control" name="src_IP" placeholder="default is 192.168.133.140"
+                      data-bv-field="firstName">
+                  </div>
+                  <div class="col-lg-6">
+                    <label class="control-label">Destinate IP</label>
+                    <input type="text" class="form-control" name="dst_IP" placeholder="Eg: 192.168.133.134"
+                      data-bv-field="firstName">
+                  </div>
+                </div>
+                <hr class="dotted">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <label class="control-label">Port</label>
+                    <input type="text" class="form-control" name="min_port" placeholder="1,2,3,4,..."
+                      data-bv-field="firstName">
+                  </div>
+                  <div class="col-lg-6">
+                    <label class="control-label">Thread number</label>
+                    <input type="text" class="form-control" name="min_port" placeholder="from 1 to 500 default is 50"
+                      data-bv-field="firstName">
+                  </div>
+                </div>
+                <hr class="dotted">
+                <div class="form-group" width="542px">
+                  <div class="col-lg-9 col-lg-offset-3 flex_class">
+                    <button type="submit" class="btn btn-primary" s >Kiểm thử</button>
+  
+                    <button type="submit" class="btn btn-primary"
+                      style="margin: auto; background-color: red;">Reset</button>
+                  </div>
+                </div>
 
+              </div>
+              <!-- Poison Form -->
+              <div id="poison-form" style="display: none;">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <label class="control-label">IP Gateway</label>
+                    <input type="text" class="form-control" name="src_IP" placeholder="192.168.133.140"
+                      data-bv-field="firstName">
+                  </div>
+                  <div class="col-lg-6">
+                    <label class="control-label">IP Victim</label>
+                    <input type="text" class="form-control" name="dst_IP" placeholder="Eg: 192.168.133.129"
+                      data-bv-field="firstName">
+                  </div>
+                </div>
+                <hr class="dotted">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <label class="control-label">MAC Gateway</label>
+                    <input type="text" class="form-control" name="min_port" placeholder="Eg: 68:7F:74:12:34:56">
+                  </div>
+                  <div class="col-lg-6">
+                    <label class="control-label">MAC Victim</label>
+                    <input type="text" class="form-control" name="max_port" placeholder="Eg: 68:7F:74:12:34:56">
+                  </div>
+                </div>
+                <hr class="dotted">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <label class="control-label">MAC Switch</label>
+                    <input type="text" class="form-control" name="min_port" placeholder="Eg: 68:7F:74:12:34:56">
+                  </div>
+                </div>
+                <hr class="dotted">
+                <div class="form-group" width="542px">
+                  <div class="col-lg-9 col-lg-offset-3 flex_class">
+                    <button type="submit" class="btn btn-primary" s >Kiểm thử</button>
+  
+                    <button type="submit" class="btn btn-primary"
+                      style="margin: auto; background-color: red;">Reset</button>
+                  </div>
+                </div>
+
+              </div>
             </div>
+
 
           </div>
 
@@ -282,6 +368,21 @@
       });
      
     });
+  </script>
+
+  <script>
+    $("#pentest-type").on("change", function() {
+      val_form = $(this).val();
+      if (val_form == 'scan'){
+        $("#scan-form").show().siblings().hide();
+      }
+      if (val_form == 'flood'){
+        $("#flood-form").show().siblings().hide();
+      }
+      if (val_form == 'poison'){
+        $("#poison-form").show().siblings().hide();
+      }
+    })
   </script>
 
 </body>
