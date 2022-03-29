@@ -1,0 +1,12 @@
+# Nmap 7.92 scan initiated Tue Mar  1 13:59:37 2022 as: nmap -p53 -sV -sC -T4 -Pn -oA 192.168.133.2 192.168.133.2
+Nmap scan report for 192.168.133.2
+Host is up (0.00078s latency).
+
+PORT   STATE SERVICE VERSION
+53/tcp open  domain  dnsmasq 2.51
+| dns-nsid: 
+|_  bind.version: dnsmasq-2.51
+MAC Address: 00:50:56:E1:BF:20 (VMware)
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Tue Mar  1 13:59:52 2022 -- 1 IP address (1 host up) scanned in 15.52 seconds

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.92 scan initiated Tue Mar  1 13:59:37 2022 as: nmap -p53 -sV -sC -T4 -Pn -oA 192.168.133.2 192.168.133.2 -->
+<nmaprun scanner="nmap" args="nmap -p53 -sV -sC -T4 -Pn -oA 192.168.133.2 192.168.133.2" start="1646161177" startstr="Tue Mar  1 13:59:37 2022" version="7.92" xmloutputversion="1.05">
+<scaninfo type="syn" protocol="tcp" numservices="1" services="53"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<hosthint><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.133.2" addrtype="ipv4"/>
+<address addr="00:50:56:E1:BF:20" addrtype="mac" vendor="VMware"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<host starttime="1646161177" endtime="1646161192"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.133.2" addrtype="ipv4"/>
+<address addr="00:50:56:E1:BF:20" addrtype="mac" vendor="VMware"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="tcp" portid="53"><state state="open" reason="syn-ack" reason_ttl="128"/><service name="domain" product="dnsmasq" version="2.51" method="probed" conf="10"><cpe>cpe:/a:thekelleys:dnsmasq:2.51</cpe></service><script id="dns-nsid" output="&#xa;  bind.version: dnsmasq-2.51"><elem key="bind.version">dnsmasq-2.51</elem>
+</script></port>
+</ports>
+<times srtt="777" rttvar="4967" to="100000"/>
+</host>
+<runstats><finished time="1646161192" timestr="Tue Mar  1 13:59:52 2022" summary="Nmap done at Tue Mar  1 13:59:52 2022; 1 IP address (1 host up) scanned in 15.52 seconds" elapsed="15.52" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>

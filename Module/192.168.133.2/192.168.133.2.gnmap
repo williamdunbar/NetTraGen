@@ -1,0 +1,4 @@
+# Nmap 7.92 scan initiated Tue Mar  1 13:59:37 2022 as: nmap -p53 -sV -sC -T4 -Pn -oA 192.168.133.2 192.168.133.2
+Host: 192.168.133.2 ()	Status: Up
+Host: 192.168.133.2 ()	Ports: 53/open/tcp//domain//dnsmasq 2.51/
+# Nmap done at Tue Mar  1 13:59:52 2022 -- 1 IP address (1 host up) scanned in 15.52 seconds
