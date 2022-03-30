@@ -5,7 +5,7 @@ import argparse
 import time
 import threading
 from queue import Queue
-from services import services
+import json
 
 
 class IpTcpAssembler:

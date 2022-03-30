@@ -2,3 +2,4 @@ fastapi
 uvicorn
 motor
 jinja2
+services
