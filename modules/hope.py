@@ -1,7 +1,5 @@
 from socket import *
 from struct import *
-import sys
-import argparse
 import time
 import threading
 from queue import Queue
@@ -63,7 +61,7 @@ class IpTcpAssembler:
         elif method == 4:
             self.tcp_ack = 0
             self.tcp_syn = 0
-            self.tcp_fin = 0
+            self.tcp_fin = 1
         self.tcp_flags = self.tcp_fin + (self.tcp_syn << 1) + (self.tcp_rst << 2) + (self.tcp_psh << 3) + (self.tcp_ack << 4) + (self.tcp_urg << 5) + (self.tcp_ece << 6) + (self.tcp_cwr << 7)
 
         self.tcp_rwnd = htons(5840)  # maximum allowed window size
@@ -129,12 +127,9 @@ class IpTcpParser:
             self.trans_protocol = self.ipv4_h_unp[6]  # the protocol used in the data portion of the IP datagram.
 
             self.rc_src_ip = inet_ntoa(self.ipv4_h_unp[8])
-            # print("1 "+str(self.ipv4_h_unp[8]))
-            # print("rc_src_ip: "+str(self.rc_src_ip))
             self.rc_dst_ip = inet_ntoa(self.ipv4_h_unp[9])
-            # print("rc_dst_ip: "+str(self.rc_dst_ip))
+
             # Parse TCP Packets, TCP Protocol Number = 6
-            # print("TCP trans protocol: " + str(self.trans_protocol))
             if self.trans_protocol == 6:
                 self.tcp_header_pack = raw_data[self.header_offset_ip: self.header_offset_ip + 20]
                 self.tcp_h_unp = unpack('! H H L L B B H H H', self.tcp_header_pack)
@@ -143,7 +138,7 @@ class IpTcpParser:
                 self.rc_dst_port = self.tcp_h_unp[1]
 
                 self.rc_tcp_flags = self.tcp_h_unp[5]
-                self.cwr = self.rc_tcp_flags >> 7 &0x01
+                self.cwr = self.rc_tcp_flags >> 7
                 self.ece = (self.rc_tcp_flags >> 6) & 0x01
                 self.urg = (self.rc_tcp_flags >> 5) & 0x01
                 self.ack = (self.rc_tcp_flags >> 4) & 0x01
@@ -178,16 +173,15 @@ def connect_scan(port):
 
 
 def ack_syn_fin_window_scan(port):
-    with socket(AF_INET, SOCK_RAW, IPPROTO_RAW) as a:  # create a raw socket of type IPPROTO_RAW that is a raw IP packet
+    with socket(AF_INET, SOCK_RAW, IPPROTO_RAW) as s:  # create a raw socket of type IPPROTO_RAW that is a raw IP packet
         # tell kernel not to put in headers, since we are providing it, when using IPPROTO_RAW this is not necessary
-        a.setsockopt(IPPROTO_IP, IP_HDRINCL, 1)
+        s.setsockopt(IPPROTO_IP, IP_HDRINCL, 1)
         # now start constructing the packet
         myscan = IpTcpAssembler(src_ip, dst_ip, port, scan_method)
 
         # Send the packet finally - the port specified has no effect
-        a.sendto(myscan.packet, (dst_ip, port))  # put this in a loop if you want to flood the target
-        time.sleep(int(processing_delay))
-        print(str(myscan.tcp_dst_port))
+        s.sendto(myscan.packet, (dst_ip, port))  # put this in a loop if you want to flood the target
+        time.sleep(processing_delay)
 
 
 # The threader thread pulls an worker_send from the queue and processes it
@@ -217,14 +211,10 @@ def threader_receiver():
         raw_data, addr = s.recvfrom(65565)
         
         myreceive = IpTcpParser(raw_data)
-        print(str(myreceive.rc_dst_port))
-        
-        print(myreceive.rc_src_port)
-        print("DST PORT: " + str(myreceive.rc_dst_port))
-        
-        if (myreceive.eth_protocol == 0x0800) and (myreceive.rc_src_ip == dst_ip) and (myreceive.trans_protocol == 6) :
+
+        if (myreceive.eth_protocol == 0x0800) and (myreceive.rc_src_ip == dst_ip):
             try:
-                service = getservbyport(myreceive.rc_src_port, "tcp")
+                service = getservbyport(port, "tcp")
             except:
                 service = '----'
 
@@ -234,16 +224,16 @@ def threader_receiver():
                 # If an RST comes back, the port is classified "unfiltered".
                 # If nothing comes back, the port is said to be "filtered".
                 # This scan type can help determine if a firewall is stateless (just blocks incoming SYN packets) or stateful (tracks connections and also blocks unsolicited ACK packets).
-                print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Unfiltered'))
+                print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'unfiltered'))
 
             elif scan_method == 3:
                 # If SYN/ACK is received, the port is open.
                 if (myreceive.syn == 1) and (myreceive.ack == 1):
-                    print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Open'))
+                    print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'open'))
                 # If RST is received, the port is close.
                 elif myreceive.rst == 1:
-                    # print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Close'))
-                    None
+                    print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'close'))
+
             elif scan_method == 4:
                 # FIN scan will work against any system where the TCP/IP implementation follows RFC 793
                 # On some systems, a closed port responds with an RST upon receiving FIN packets
@@ -258,119 +248,51 @@ def threader_receiver():
                 if myreceive.rst == 1:
                     # If TCP RST response with zero window field is received, the port is close.
                     if myreceive.rwnd == 0:
-                        # print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'close'))
-                        None
+                        print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'close'))
                     # If TCP RST response with non-zero window field is received, the port is open.
                     else:
-                        print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Open'))
-
-
-def UserInput():
-    #Cài đặt tham số khi dùng trên terminal
-    parser = argparse.ArgumentParser("MTA SCANNING TOOL")
-    parser.add_argument("-t", "--target", help="Specify target IP", required=False)
-    parser.add_argument("-p", "--ports", type=int, nargs="+")
-    parser.add_argument("-s", "--scantype", help="Scan type, connect/ack/syn/fin/window", required=False)
-    parser.add_argument("-d", "--delay", help="Processing Delay", required=False)
-    args = parser.parse_args()
-
-    if args.target:
-        arg_target  = args.target
-        error = ("Invalid Input")
-        try:
-            target = gethostbyname(arg_target )
-        except (UnboundLocalError, gaierror):
-            print("\n[-]Invalid format. Please use a correct IP or web address[-]\n")
-            sys.exit()
-        if args.scantype:
-            scantype = args.scantype.lower()
-        else:
-            print("Scan type, connect/ack/syn/fin/window")
-            sys.exit()
-        if args.ports:
-            ports = args.ports
-        else:
-            ports = range(1, 1024)
-        if args.delay:
-            processing_delay = args.delay
-        else:
-            processing_delay = 1
-    else:
-        # User input: Target
-        input_target = input("Enter your target IP address or URL here: ")
-        error = ("Invalid Input")
-        try:
-            target = gethostbyname(input_target)
-        except (UnboundLocalError, socket.gaierror):
-            print("\n[-]Invalid format. Please use a correct IP or web address[-]\n")
-            sys.exit()
-
-        #User input validation: IP & End port --> target must be a valid IPv4 address AND portnumber is integer with a maximum of 65535.
-        port_range_min = int(input('MIN Port # : '))
-        port_range_max = int(input('MAX Port # : '))
-        ports = range(port_range_min, port_range_max)
-
-        #Delay Processing
-        processing_delay = int(input('Enter the Processing Delay between each batch scan in second ( e.g. : 2 ) : '))
-
-        #User input: Scan type
-        scantype = input("Enter the Scan-type (connect = c / ack = a / syn = s / fin = f / window = w): ")
-
-    if scantype == "connect" or scantype == "c" or scantype == "C":
-        scan_method = 1
-    elif scantype == "ack" or scantype == "a" or scantype == "A":
-        scan_method = 2
-    elif scantype == "syn" or scantype == "s" or scantype == "S":
-        scan_method = 3
-    elif scantype == "fin" or scantype == "f" or scantype == "F":
-        scan_method = 4
-    elif scantype == "window" or scantype == "w" or scantype == "W":
-        scan_method = 5
-    else:
-        print("Scan type not supported, Usage: (connect = c / ack = a / syn = s / fin = f / window = w)")
-    return target, ports, scan_method, processing_delay
+                        print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'open'))
 
 
 if __name__ == '__main__':
-    src_ip = '192.168.133.140'
-
-    dst_ip, all_ports, scan_method, processing_delay = UserInput()
-
-    
+    src_ip = '10.0.2.15'
+    dst_fqdn_ip = input('Enter the Destination FQDN or IPv4 Address ( e.g. : highhost.org or 95.216.96.171 ) : ')
+    dst_ip = gethostbyname(dst_fqdn_ip)
+    port_range_min = int(input('MIN Port # : '))
+    port_range_max = int(input('MAX Port # : '))
+    scan_method = int(input('Choose the Scan Method from 1-Connect , 2-ACK , 3-SYN , 4-FIN , 5-Window : '))
+    processing_delay = int(input('Enter the Processing Delay between each batch scan in second ( e.g. : 2 ) : '))
 
     num_threads = 500
 
-    print('Scan report for : ' + dst_ip)
+    print('scan report for : ' + dst_fqdn_ip)
     print('{:<8} {:<15} {:<10}'.format('PORT', 'SERVICE', 'STATE'))
 
     # a print_lock is what is used to prevent "double" modification of shared variables.
     # this is used so while one thread is using a variable, others cannot access
     # it. Once done, the thread releases the print_lock.
     # to use it, you want to specify a print_lock per thing you wish to print_lock.
-    print("1")
     print_lock = threading.Lock()
-    print("1")
 
     if scan_method != 1:
+        all_ports = [x for x in range(port_range_min, port_range_max+1)]
         responsed_ports = []
 
         # 1 thread for receiving
         tr = threading.Thread(target=threader_receiver, daemon=True)  # classifying as a daemon, so they will die when the main dies
         tr.start()
-        print("2")
 
     # Create the queue
     q = Queue()
 
     # jobs assigned.
-    for worker_send in all_ports:
+    for worker_send in range(port_range_min, port_range_max+1):
         q.put(worker_send)
 
     # how many threads are we going to allow for
     for x in range(num_threads):
         ts = threading.Thread(target=threader_sender, daemon=True)  # classifying as a daemon, so they will die when the main dies
         ts.start()
-        print("3")
 
     start = time.time()
 
@@ -378,6 +300,7 @@ if __name__ == '__main__':
     q.join()
 
     if scan_method != 1:
+        time.sleep(60)
 
         other_ports = [x for x in all_ports if x not in responsed_ports]
         # 2 - ACK, 3 - SYN, 4 - FIN, 5 - Window
@@ -393,4 +316,4 @@ if __name__ == '__main__':
         elif scan_method == 5:
             print('# of Not Shown : ' + str(len(other_ports)) + ' filtered')
 
-    print('Elapsed time : ' + str(time.time()-start))
+    print('elapsed time : ' + str(time.time()-start))

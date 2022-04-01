@@ -35,12 +35,12 @@ function ScanConfig(scan_type){
             max_port : $("#inp-scan-max-port").val(),
             thread : $("#inp-scan-thrd").val(),
             delay : $("#inp-scan-delay").val()
-        }),
+        }), 
         success: function(){
-            alert("Done!")
+            console.log("success")
         },
         error: function(){
-            alert("Error!")
+            console.log("Error!")
         }
     });
     console.log("Button scan click!")

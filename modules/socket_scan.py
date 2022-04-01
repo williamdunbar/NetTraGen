@@ -1,3 +1,4 @@
+from re import M
 from socket import *
 from struct import *
 import sys
@@ -6,6 +7,7 @@ import time
 import threading
 from queue import Queue
 import json
+import os
 
 
 class IpTcpAssembler:
@@ -64,7 +66,7 @@ class IpTcpAssembler:
         elif method == 4:
             self.tcp_ack = 0
             self.tcp_syn = 0
-            self.tcp_fin = 0
+            self.tcp_fin = 1
         self.tcp_flags = self.tcp_fin + (self.tcp_syn << 1) + (self.tcp_rst << 2) + (self.tcp_psh << 3) + (self.tcp_ack << 4) + (self.tcp_urg << 5) + (self.tcp_ece << 6) + (self.tcp_cwr << 7)
 
         self.tcp_rwnd = htons(5840)  # maximum allowed window size
@@ -132,7 +134,7 @@ class IpTcpParser:
             self.rc_src_ip = inet_ntoa(self.ipv4_h_unp[8])
             # print("1 "+str(self.ipv4_h_unp[8]))
             # print("rc_src_ip: "+str(self.rc_src_ip))
-            self.rc_dst_ip = inet_ntoa(self.ipv4_h_unp[9])
+            self.rc_dst_ip = inet_ntoa(self.ipv4_h_unp[9]) 
             # print("rc_dst_ip: "+str(self.rc_dst_ip))
             # Parse TCP Packets, TCP Protocol Number = 6
             # print("TCP trans protocol: " + str(self.trans_protocol))
@@ -155,6 +157,19 @@ class IpTcpParser:
 
                 self.rwnd = self.tcp_h_unp[6]
 
+def Json_Parse(port, service, state):
+    object = {}
+    object["port"] = port
+    object["service"] = service
+    object["state"] = state
+    return json.dumps(object)
+
+def write_json(data, filename):
+    cur_path = os.path.dirname(__file__)
+    new_path = os.path.join(cur_path, '..', 'log', filename)
+    print(new_path)
+    with open(new_path,"w") as f:
+        json.dump(data,f)
 
 # major drawback :
 # If a firewall is running on the victim,
@@ -163,16 +178,21 @@ class IpTcpParser:
 # has not been specifically "opened" will usually result in the connection attempt being logged.
 # Additionally, most servers will log connections and their source IP,
 # so it would be easy to detect the source of a TCP connect() scan.
+
 def connect_scan(port):
     with socket(AF_INET, SOCK_STREAM) as s:
         try:
             s.connect((dst_ip, port))
+            
             try:
                 service = getservbyport(port, "tcp")
+                
             except:
                 service = '----'
             with print_lock:
                 print('{:<8} {:<15} {:<10}'.format(str(port), service, 'open'))
+                
+
                 # time.sleep(processing_delay)
         except:
             pass  # the remote system is offline, the port is closed, or some other error occurred along the way
@@ -187,7 +207,8 @@ def ack_syn_fin_window_scan(port):
 
         # Send the packet finally - the port specified has no effect
         a.sendto(myscan.packet, (dst_ip, port))  # put this in a loop if you want to flood the target
-        time.sleep(processing_delay)
+        time.sleep(int(processing_delay))
+        # print(str(myscan.tcp_dst_port))
 
 
 # The threader thread pulls an worker_send from the queue and processes it
@@ -207,38 +228,52 @@ def threader_sender():
         q.task_done()
 
 
-def threader_receiver():
+
+
+
+def threader_receiver(json_var):
     # create a AF_PACKET type raw socket (thats basically packet level)
     # define ETH_P_ALL    0x0003    Every packet
     s = socket(AF_PACKET, SOCK_RAW, ntohs(3))
-
+    
     # infinite loop to receive packets
     while True:
-        raw_data, addr = s.recvfrom(65565)
-        
+        raw_data, addr = s.recvfrom(65535)
         myreceive = IpTcpParser(raw_data)
+        try:
+            if(myreceive.rc_src_port >= all_ports[-1]):
+                break
+        except:
+            None
         
-        # print(myreceive.rc_src_port)
-        # print("DST PORT: " + str(myreceive.rc_dst_port))
-        
-        if (myreceive.eth_protocol == 0x0800) and (myreceive.rc_src_ip == dst_ip) and (myreceive.trans_protocol == 6) :
+        if (myreceive.eth_protocol == 0x0800) and (str(myreceive.rc_src_ip) == str(dst_ip)) and (myreceive.trans_protocol == 6) :
+            # print(myreceive.rc_src_port)
+            # print("DST PORT: " + str(myreceive.rc_dst_port))
+            # print(myreceive.rc_src_ip)
+            
+
             try:
                 service = getservbyport(myreceive.rc_src_port, "tcp")
             except:
                 service = '----'
 
             responsed_ports.append(myreceive.rc_src_port)
+            # print(myreceive.ack)
+            # print(myreceive.syn)
+            # print(myreceive.fin)
             # 2- ACK, 3- SYN, 4- FIN, 5- Window
             if (scan_method == 2) and (myreceive.rst == 1):
                 # If an RST comes back, the port is classified "unfiltered".
                 # If nothing comes back, the port is said to be "filtered".
                 # This scan type can help determine if a firewall is stateless (just blocks incoming SYN packets) or stateful (tracks connections and also blocks unsolicited ACK packets).
                 print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Unfiltered'))
+                # json_var += Json_Parse(str(myreceive.rc_src_port),service,'Unfiltered')
 
             elif scan_method == 3:
                 # If SYN/ACK is received, the port is open.
                 if (myreceive.syn == 1) and (myreceive.ack == 1):
                     print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Open'))
+                    json_var = json_var +","+ Json_Parse(str(myreceive.rc_src_port),service,'Open')
                 # If RST is received, the port is close.
                 elif myreceive.rst == 1:
                     # print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Close'))
@@ -249,6 +284,7 @@ def threader_receiver():
                 # Microsoft Windows does not follow the RFC, and will ignore these packets even on closed ports.
                 if myreceive.rst == 1:
                     print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'close on Linux OS'))
+                    json_var = json_var +","+ Json_Parse(str(myreceive.rc_src_port),service,'Close')
                 # an open or filtered or MW systems port should just drop them (it’s listening for packets with SYN set)
 
             elif scan_method == 5:
@@ -262,7 +298,9 @@ def threader_receiver():
                     # If TCP RST response with non-zero window field is received, the port is open.
                     else:
                         print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Open'))
-
+                        json_var = json_var +","+ Json_Parse(str(myreceive.rc_src_port),service,'Open')
+    write_json(json_var,"01.json")
+    # write_json(json_var,"temp.json")
 
 def UserInput():
     #Cài đặt tham số khi dùng trên terminal
@@ -290,13 +328,10 @@ def UserInput():
         if args.min:
             if args.max:
                 ports = range(int(args.min), int(args.max))
-                print("khon")
             else:
                 ports = range(1,1024)
-                print("ngu")
         else:
             ports = range(1,1024)
-            print("ngu")
         if args.delay:
             processing_delay = args.delay
         else:
@@ -338,10 +373,11 @@ def UserInput():
 
 
 if __name__ == '__main__':
-    src_ip = '192.168.133.140'
-
+    src_ip = '192.168.133.144'
+    json_var = Json_Parse(0,"---","---")
+    
     dst_ip, all_ports, scan_method, processing_delay = UserInput()
-
+    
     
 
     num_threads = 500
@@ -359,8 +395,9 @@ if __name__ == '__main__':
         responsed_ports = []
 
         # 1 thread for receiving
-        tr = threading.Thread(target=threader_receiver, daemon=True)  # classifying as a daemon, so they will die when the main dies
+        tr = threading.Thread(target=threader_receiver, daemon=True, args=(json_var,))  # classifying as a daemon, so they will die when the main dies
         tr.start()
+
 
     # Create the queue
     q = Queue()
@@ -378,6 +415,7 @@ if __name__ == '__main__':
 
     # wait until the thread terminates.
     q.join()
+
 
     if scan_method != 1:
 
