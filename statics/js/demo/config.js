@@ -2,17 +2,18 @@ $(document).ready(function(){
     console.log("Get Ready !")
 })
 
-$("#btn-deploy").click(function(e){
+$(".btn-deploy").click(function(e){
     var condition1 = $("#pentest-type").val()
     var condition2 = $("#attack-type").val()
     if(condition1 == "scan"){
+        // console.log("Scan")
         e.preventDefault();
         ScanConfig(condition2);
     } 
-    else if(condition1 == "flood"){
+    else if(condition1 == 'flood'){
         console.log("Flood")
     }
-    else if(condition1 == "poison"){
+    else if(condition1 == 'poison'){
         console.log("Poison")
     }
     else{
@@ -21,6 +22,10 @@ $("#btn-deploy").click(function(e){
     }
     
 })
+
+function clear(){
+    console.log("Clear");
+}
 
 function ScanConfig(scan_type){
     $.ajax({

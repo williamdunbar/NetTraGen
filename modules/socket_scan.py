@@ -179,7 +179,7 @@ def write_json(data, filename):
     # data = "["+ data + "]"
     print(data)
     with open(new_path,"w") as f:
-        json.dump(data,f)
+        json.dump(data,f, indent=2)
 
 # major drawback :
 # If a firewall is running on the victim,
@@ -329,7 +329,7 @@ def UserInput():
         arg_target  = args.target
         error = ("Invalid Input")
         try:
-            target = gethostbyname(arg_target )
+            target = gethostbyname(arg_target ) 
         except (UnboundLocalError, gaierror):
             print("\n[-]Invalid format. Please use a correct IP or web address[-]\n")       
             sys.exit()

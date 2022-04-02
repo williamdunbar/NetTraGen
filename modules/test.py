@@ -63,6 +63,11 @@ json = [
 
 # d = a +","+ c
 
-my_data = [{'id': 1, 'name': 'Frank'}, {'id': 2, 'name': 'Rakesh'}]
-print(type(my_data))
-write_json(my_data,"01.json")
+# my_data = [{'id': 1, 'name': 'Frank'}, {'id': 2, 'name': 'Rakesh'}]
+# print(type(my_data))
+# write_json(my_data,"01.json")
+
+import socket
+sock = socket.socket()
+sock.bind(('', 0))
+print(sock.getsockname()[1])
