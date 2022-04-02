@@ -1,18 +1,20 @@
 import json
 import os
 
-def Json_Parse(name, age, sex,occupation):
+def Json_Parse(port, service, state):
     object = {}
-    object["name"] = name
-    object["age"] = age
-    object["sex"] = sex
-    object["occupation"] = occupation
-    return json.dump(object)
+    object["port"] = port
+    object["service"] = service
+    object["state"] = state
+
+    json_object = json.dumps(object)
+    print(json_object)
+    return json_object
 
 def write_json(data, filename):
     cur_path = os.path.dirname(__file__)
     new_path = os.path.join(cur_path, '..', 'log', filename)
-    print(new_path)
+    print(data)
     with open(new_path,"w") as f:
         json.dump(data,f)
 
@@ -62,4 +64,5 @@ json = [
 # d = a +","+ c
 
 my_data = [{'id': 1, 'name': 'Frank'}, {'id': 2, 'name': 'Rakesh'}]
-print(my_data)
+print(type(my_data))
+write_json(my_data,"01.json")

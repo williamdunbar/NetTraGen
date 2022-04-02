@@ -19,6 +19,7 @@ $("#btn-deploy").click(function(e){
         console.log("Choose pentest type")
 
     }
+    
 })
 
 function ScanConfig(scan_type){
@@ -38,9 +39,11 @@ function ScanConfig(scan_type){
         }), 
         success: function(){
             console.log("success")
+            window.location.replace("/result/scan")        
         },
         error: function(){
             console.log("Error!")
+            window.location.replace("/result/scan")            
         }
     });
     console.log("Button scan click!")

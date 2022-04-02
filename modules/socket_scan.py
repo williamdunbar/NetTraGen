@@ -157,17 +157,26 @@ class IpTcpParser:
 
                 self.rwnd = self.tcp_h_unp[6]
 
-def Json_Parse(port, service, state):
+def Json_Parse(port, service, state, victim_ip, attack_ip, fin, syn, rst, ack):
     object = {}
     object["port"] = port
     object["service"] = service
     object["state"] = state
-    return json.dumps(object)
+    object["victim_ip"] = victim_ip
+    object["attack_ip"] = attack_ip
+    object["fin"] = fin
+    object["syn"] = syn
+    object["rst"] = rst
+    object["ack"] = ack
+    # json_object = json.dumps(object)
+    # print(json_object)
+    return object
 
 def write_json(data, filename):
     cur_path = os.path.dirname(__file__)
     new_path = os.path.join(cur_path, '..', 'log', filename)
-    print(new_path)
+    # data = "["+ data + "]"
+    print(data)
     with open(new_path,"w") as f:
         json.dump(data,f)
 
@@ -231,7 +240,7 @@ def threader_sender():
 
 
 
-def threader_receiver(json_var):
+def threader_receiver(json_vars):
     # create a AF_PACKET type raw socket (thats basically packet level)
     # define ETH_P_ALL    0x0003    Every packet
     s = socket(AF_PACKET, SOCK_RAW, ntohs(3))
@@ -255,7 +264,7 @@ def threader_receiver(json_var):
             try:
                 service = getservbyport(myreceive.rc_src_port, "tcp")
             except:
-                service = '----'
+                service = ''
 
             responsed_ports.append(myreceive.rc_src_port)
             # print(myreceive.ack)
@@ -273,11 +282,12 @@ def threader_receiver(json_var):
                 # If SYN/ACK is received, the port is open.
                 if (myreceive.syn == 1) and (myreceive.ack == 1):
                     print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Open'))
-                    json_var = json_var +","+ Json_Parse(str(myreceive.rc_src_port),service,'Open')
+                    json_vars.append(Json_Parse(str(myreceive.rc_src_port),service,'Open',str(myreceive.rc_src_ip),str(myreceive.rc_dst_ip),str(myreceive.fin),str(myreceive.syn),str(myreceive.rst),str(myreceive.ack)))
                 # If RST is received, the port is close.
                 elif myreceive.rst == 1:
                     # print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Close'))
-                    None
+                    json_vars.append(Json_Parse(str(myreceive.rc_src_port),'','Close',str(myreceive.rc_src_ip),str(myreceive.rc_dst_ip),str(myreceive.fin),str(myreceive.syn),str(myreceive.rst),str(myreceive.ack)))
+
             elif scan_method == 4:
                 # FIN scan will work against any system where the TCP/IP implementation follows RFC 793
                 # On some systems, a closed port responds with an RST upon receiving FIN packets
@@ -299,8 +309,8 @@ def threader_receiver(json_var):
                     else:
                         print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Open'))
                         json_var = json_var +","+ Json_Parse(str(myreceive.rc_src_port),service,'Open')
-    write_json(json_var,"01.json")
-    # write_json(json_var,"temp.json")
+    write_json(json_vars,"01.json")
+    write_json(json_vars,"temp.json")
 
 def UserInput():
     #Cài đặt tham số khi dùng trên terminal
@@ -374,7 +384,7 @@ def UserInput():
 
 if __name__ == '__main__':
     src_ip = '192.168.133.144'
-    json_var = Json_Parse(0,"---","---")
+    json_vars = []
     
     dst_ip, all_ports, scan_method, processing_delay = UserInput()
     
@@ -395,7 +405,7 @@ if __name__ == '__main__':
         responsed_ports = []
 
         # 1 thread for receiving
-        tr = threading.Thread(target=threader_receiver, daemon=True, args=(json_var,))  # classifying as a daemon, so they will die when the main dies
+        tr = threading.Thread(target=threader_receiver, daemon=True, args=(json_vars,))  # classifying as a daemon, so they will die when the main dies
         tr.start()
 
 

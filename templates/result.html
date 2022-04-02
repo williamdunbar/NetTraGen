@@ -90,7 +90,7 @@
           </li>
           <li class="has-submenu"><a href="report"><i class="fa fa-file-text-o"></i> <span class="nav-label">BÁO
                 CÁO</span></a></li>
-          <li class="has-submenu"><a href="console.html"><i class="fa fa-heart-o"></i> <span
+          <li class="has-submenu"><a href="console"><i class="fa fa-heart-o"></i> <span
                 class="nav-label">CONSOLE</span></a></li>
   
         </ul>
@@ -306,19 +306,26 @@
               </div>
               <div class="panel panel-default">
                   <div class="panel-heading">
-                      <a href="#" data-column="0" class="toggle-vis btn btn-default btn-sm">Name</a>
-                      <a href="#" data-column="1" class="toggle-vis btn btn-default btn-sm">Position</a>
-                      <a href="#" data-column="2" class="toggle-vis btn btn-default btn-sm">Office</a>
-                      <!-- <a href="#" data-column="3" class="toggle-vis btn btn-default btn-sm">Age</a>
-                      <a href="#" data-column="4" class="toggle-vis btn btn-default btn-sm">Start date</a>
-                      <a href="#" data-column="5" class="toggle-vis btn btn-default btn-sm">Salary</a> -->
+                      <a href="#" data-column="3" class="toggle-vis btn btn-default btn-sm">Attack's Ip</a>
+                      <a href="#" data-column="4" class="toggle-vis btn btn-default btn-sm">Victim's Ip</a>
+                      <a href="#" data-column="5" class="toggle-vis btn btn-default btn-sm">FYN flag</a>
+                      <a href="#" data-column="6" class="toggle-vis btn btn-default btn-sm">SYN flag</a>
+                      <a href="#" data-column="7" class="toggle-vis btn btn-default btn-sm">RST flag</a>
+                      <a href="#" data-column="8" class="toggle-vis btn btn-default btn-sm">ACK flag</a>
                   </div>
                   <div class="panel-body">
                       <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="toggleColumn-datatable">
                           <thead>
                               <tr>
-                                  <th>Name</th>
-                                  <th>Position</th>
+                                  <th>Port</th>
+                                  <th>Service</th>
+                                  <th>Status</th>
+                                  <th>Attack's Ip</th>
+                                  <th>Victim's Ip</th>
+                                  <th>FYN flag</th>
+                                  <th>SYN flag</th>
+                                  <th>RST flag</th>
+                                  <th>ACK flag</th>
                                   <!-- <th>Office</th> -->
                                   <!-- <th>Age</th>
                                   <th>Start date</th>
@@ -328,8 +335,15 @@
                           <tbody>   
                             {% for row in data %}
                             <tr> 
-                              <th>{{row.id}}</th>
-                              <th>{{row.name}}</th>
+                              <th>{{row.port}}</th>
+                              <th>{{row.service}}</th>
+                              <th>{{row.state}}</th>
+                              <th>{{row.attack_ip}}</th>
+                              <th>{{row.victim_ip}}</th>
+                              <th>{{row.fin}}</th>
+                              <th>{{row.syn}}</th>
+                              <th>{{row.rst}}</th>
+                              <th>{{row.ack}}</th>
                             </tr>  
                             {%endfor%}
                                       
