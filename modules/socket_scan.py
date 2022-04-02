@@ -8,6 +8,7 @@ import threading
 from queue import Queue
 import json
 import os
+from datetime import datetime
 
 
 class IpTcpAssembler:
@@ -309,8 +310,10 @@ def threader_receiver(json_vars):
                     else:
                         print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Open'))
                         json_var = json_var +","+ Json_Parse(str(myreceive.rc_src_port),service,'Open')
-    write_json(json_vars,"01.json")
-    write_json(json_vars,"temp.json")
+    
+    current_time = datetime.now().strftime("%H:%M_%m-%d-%Y")
+    write_json(json_vars,"scan_"+current_time+".json")
+    write_json(json_vars,"scan_temp.json")
 
 def UserInput():
     #Cài đặt tham số khi dùng trên terminal
@@ -383,7 +386,7 @@ def UserInput():
 
 
 if __name__ == '__main__':
-    src_ip = '192.168.133.144'
+    src_ip = '192.168.133.145'
     json_vars = []
     
     dst_ip, all_ports, scan_method, processing_delay = UserInput()

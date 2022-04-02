@@ -54,7 +54,7 @@ async def read_pentest(request: Request):
     
 @app.get("/result/scan", response_class=HTMLResponse)
 async def read_result_scan(request: Request ):
-    result = read_json_file(file_name= 'log/temp.json')
+    result = read_json_file(file_name= 'log/scan_temp.json')
     print(result)
     # return result
     return templates.TemplateResponse("result.html", {"request": request, "data": result})
