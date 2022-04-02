@@ -192,3 +192,5 @@ def threader_sender(json_vars):
         a.sendto(myscan.packet, (dst_ip, port))  # put this in a loop if you want to flood the target
         time.sleep(int(processing_delay))
 
+def UserInput():
+    
