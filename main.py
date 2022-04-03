@@ -9,15 +9,6 @@ import json
 from model import ScanConfig, FloodConfig, ArpConfig
 
 
-class ScanConfig(BaseModel):
-    type : str
-    src_ip : str
-    dst_ip : str
-    min_port : int
-    max_port : int
-    thread : int
-    delay : int 
-
 app =FastAPI()
 app.mount("/statics", StaticFiles(directory="statics", html=True), name="statics")
 templates = Jinja2Templates(directory="templates")
@@ -59,12 +50,12 @@ async def read_scan(item: FloodConfig, request: Request):
 async def read_scan(item: ArpConfig, request: Request):
     cmd = "cd modules; sudo python3 arp.py -aM '00:0C:29:7F:05:7D' -vM '00:0C:29:EA:26:44' -gM '00:0C:29:1E:C1:27' -vI '20.20.20.24' -gI '20.20.20.21'"
     syntax = "cd modules; sudo python3 arp.py -aM " + item.at_mac + " -vM " + item.vt_mac + " -gM " + item.gw_mac + " -vI " + item.vt_ip + " -gI " + item.gw_ip
-    print(syntax)
-    # os.system(syntax)
+    print(cmd)
+    os.system(syntax)
     response = RedirectResponse('/result/arp', status_code=303)
     # print(json_data)
-    # return response
-    return {"message": "welcome to FastAPI!"}
+    return response
+    # return {"message": "welcome to FastAPI!"}
 
 
 @app.get("/result", response_class=HTMLResponse)

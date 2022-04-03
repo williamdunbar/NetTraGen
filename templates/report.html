@@ -126,26 +126,11 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">Report</div>
                     <div class="panel-body">          
-                        <embed src="/statics/pdf/Chương-3Ứng-dụng-CNTT-trong-tự-động-hóa-chỉ-huy-mô-phỏng-huấn-luyện.pdf#toolbar=1" width="920" height="410">
+                        <embed id="show_file" src="/statics/docs/Fuzzing.pdf" width="920" height="620">
                     </div>     
                 </div>
               </div>
               <div class="col-lg-4">    
-                  <div class="panel panel-default">
-                    <div class="panel-heading">Filter</div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <input type="source_address" class="form-control" id="sourceaddress" placeholder="Source Address">
-                        </div>
-                        <div class="form-group">
-                            <input type="destination_address" class="form-control" id="destinationaddress" placeholder="Destination Address">
-                        </div>
-                        <div class="form-group">
-                            <input type="attack_type" class="form-control" id="attacktype" placeholder="Attack Type">
-                        </div>
-                        <button type="generate" class="btn btn-primary">Generate</button>
-                    </div>
-                  </div>
                 </div>  
                 <div class="col-lg-4">    
                     <div class="panel panel-default">
@@ -157,9 +142,12 @@
                           <div class="form-group">
                               <input type="sj" class="form-control" id="Subject" placeholder="Subject">
                           </div>
-                          <button id="sendReportBtn" class="btn btn-primary">Send</button>
+                          <div id="row">
+                            <button id="sendReportBtn" class="btn btn-primary">Send</button>
+                          </div>
                       </div>
                     </div>
+                    <input width="400px" type="file" id="chooseReportBtn" class="btn btn-primary"></input>
                   </div>              
               
             </div>

@@ -179,7 +179,7 @@ def write_json(data, filename):
     # data = "["+ data + "]"
     print(data)
     with open(new_path,"w") as f:
-        json.dump(data,f, indent=2)
+        json.dump(data,f)
 
 # major drawback :
 # If a firewall is running on the victim,
@@ -277,6 +277,8 @@ def threader_receiver(json_vars):
                 # If nothing comes back, the port is said to be "filtered".
                 # This scan type can help determine if a firewall is stateless (just blocks incoming SYN packets) or stateful (tracks connections and also blocks unsolicited ACK packets).
                 print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Unfiltered'))
+                json_vars.append(Json_Parse(str(myreceive.rc_src_port),service,'Unfiltered',str(myreceive.rc_src_ip),str(myreceive.rc_dst_ip),str(myreceive.fin),str(myreceive.syn),str(myreceive.rst),str(myreceive.ack)))
+
                 # json_var += Json_Parse(str(myreceive.rc_src_port),service,'Unfiltered')
 
             elif scan_method == 3:
@@ -295,7 +297,10 @@ def threader_receiver(json_vars):
                 # Microsoft Windows does not follow the RFC, and will ignore these packets even on closed ports.
                 if myreceive.rst == 1:
                     print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'close on Linux OS'))
-                    json_var = json_var +","+ Json_Parse(str(myreceive.rc_src_port),service,'Close')
+                    json_vars.append(Json_Parse(str(myreceive.rc_src_port),'','Close',str(myreceive.rc_src_ip),str(myreceive.rc_dst_ip),str(myreceive.fin),str(myreceive.syn),str(myreceive.rst),str(myreceive.ack)))
+                else: 
+                    json_vars.append(Json_Parse(str(myreceive.rc_src_port),'','Open',str(myreceive.rc_src_ip),str(myreceive.rc_dst_ip),str(myreceive.fin),str(myreceive.syn),str(myreceive.rst),str(myreceive.ack)))
+
                 # an open or filtered or MW systems port should just drop them (it’s listening for packets with SYN set)
 
             elif scan_method == 5:
@@ -305,11 +310,14 @@ def threader_receiver(json_vars):
                     # If TCP RST response with zero window field is received, the port is close.
                     if myreceive.rwnd == 0:
                         # print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'close'))
-                        None
+                        # None
+                        json_vars.append(Json_Parse(str(myreceive.rc_src_port),'','Closed',str(myreceive.rc_src_ip),str(myreceive.rc_dst_ip),str(myreceive.fin),str(myreceive.syn),str(myreceive.rst),str(myreceive.ack)))
+
                     # If TCP RST response with non-zero window field is received, the port is open.
                     else:
                         print('{:<8} {:<15} {:<10}'.format(str(myreceive.rc_src_port), service, 'Open'))
-                        json_var = json_var +","+ Json_Parse(str(myreceive.rc_src_port),service,'Open')
+                        json_vars.append(Json_Parse(str(myreceive.rc_src_port),'','Open',str(myreceive.rc_src_ip),str(myreceive.rc_dst_ip),str(myreceive.fin),str(myreceive.syn),str(myreceive.rst),str(myreceive.ack)))
+
     
     current_time = datetime.now().strftime("%H:%M_%m-%d-%Y")
     write_json(json_vars,"scan_"+current_time+".json")

@@ -234,7 +234,7 @@ def write_json(data, filename):
     # data = "["+ data + "]"
     print("Save successful !!! \n")
     with open(new_path,"w") as f:
-        json.dump(data,f, indent=2)
+        json.dump(data,f)
 
 
 def threader_sender(json_vars,x):
