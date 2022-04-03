@@ -63,16 +63,18 @@ function FloodConfig(flood_type){
         dataType: "json",
         contentType: "application/json",
         data: JSON.stringify({
-            src_ip : $("#dst_IP").val(),
+            dst_ip : $("#dst_IP").val(),
             dst_port : $("#dst_port").val(),
             delay : $("#delay").val(),
             thread : $("#thread").val()
         }), 
         success: function(){
             console.log("Success")
+            console.log(data)
             window.location.replace("/result/flood")        
         },
         error: function(){
+            console.log(data)
             console.log("Error!")
             window.location.replace("/result/flood")            
         }

@@ -14,7 +14,7 @@ class ScanConfig(BaseModel):
 
 class FloodConfig(BaseModel):
     dst_ip: str
-    dst_port: str
+    dst_port: int
     delay: int
     thread: int
 
