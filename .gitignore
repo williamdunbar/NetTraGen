@@ -1,1 +1,4 @@
-log/
+log/*
+!scan_temp.json
+!flood_temp.json
+!poisoning_temp.json

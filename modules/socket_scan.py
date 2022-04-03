@@ -177,7 +177,7 @@ def write_json(data, filename):
     cur_path = os.path.dirname(__file__)
     new_path = os.path.join(cur_path, '..', 'log', filename)
     # data = "["+ data + "]"
-    print(data)
+    # print(data)
     with open(new_path,"w") as f:
         json.dump(data,f)
 

@@ -44,14 +44,14 @@ async def read_scan(item: FloodConfig, request: Request):
     os.system(cmd)
     response = RedirectResponse('/result/flood', status_code=303)
     # print(json_data)
-    return response
+    return response 
 
 @app.post("/pentest/arp")
 async def read_scan(item: ArpConfig, request: Request):
     cmd = "cd modules; sudo python3 arp.py -aM '00:0C:29:7F:05:7D' -vM '00:0C:29:EA:26:44' -gM '00:0C:29:1E:C1:27' -vI '20.20.20.24' -gI '20.20.20.21'"
     syntax = "cd modules; sudo python3 arp.py -aM " + item.at_mac + " -vM " + item.vt_mac + " -gM " + item.gw_mac + " -vI " + item.vt_ip + " -gI " + item.gw_ip
     print(cmd)
-    os.system(syntax)
+    os.system(cmd)
     response = RedirectResponse('/result/arp', status_code=303)
     # print(json_data)
     return response

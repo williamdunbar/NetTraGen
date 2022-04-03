@@ -11,12 +11,12 @@ $(".btn-deploy").click(function(e){
         ScanConfig(condition2);
     } 
     else if(condition1 == 'flood'){
-        console.log("Flood")
+        console.log("Flood")  
         FloodConfig(condition2);
     }
     else if(condition1 == 'poison'){
         console.log("Poison")
-        ArpConfig();
+        ArpConfig(); 
     }
     else{
         console.log("Choose pentest type")
@@ -59,7 +59,7 @@ function ScanConfig(scan_type){
 function FloodConfig(flood_type){
     $.ajax({
         type: "POST",
-        url: "/pentest/scan",
+        url: "/pentest/flood",
         dataType: "json",
         contentType: "application/json",
         data: JSON.stringify({
