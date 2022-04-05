@@ -9,7 +9,7 @@ from reportlab.platypus import TableStyle
 from reportlab.platypus import Paragraph
 from reportlab.platypus import SimpleDocTemplate
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4, letter
+from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER, TA_RIGHT
@@ -17,6 +17,7 @@ import json
 from datetime import datetime
 from types import SimpleNamespace
 import os
+
 from main import read_json_file
 
 
