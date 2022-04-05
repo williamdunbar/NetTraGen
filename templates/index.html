@@ -129,54 +129,53 @@
         <h1>Tổng quan</h1>
       </div>
 
-
       <div class="row">
-
-        <div class="col-md-3 col-sm-6">
-          <div class="panel panel-default clearfix dashboard-stats rounded">                      
-            <h2 class="transit">ABCXYZ</h2>           
-          </div>
-        </div>
-        <div class="col-md-3 col-sm-6">
-          <div class="panel panel-default clearfix dashboard-stats rounded">                      
-            <h2 class="transit">ABCXYZ</h2>           
-          </div>
-        </div><div class="col-md-3 col-sm-6">
-          <div class="panel panel-default clearfix dashboard-stats rounded">                      
-            <h2 class="transit">ABCXYZ</h2>           
-          </div>
-        </div><div class="col-md-3 col-sm-6">
-          <div class="panel panel-default clearfix dashboard-stats rounded">                      
-            <h2 class="transit">ABCXYZ</h2>           
-          </div>
-        </div>
+      <div class="col-lg-6">
+<div class="list-group">
+  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
+    <div class="d-flex w-100 justify-content-between">
+      <h2 class="mb-1" id="total_attack">{{result_arp|length + result_scan|length + result_flood|length}}</h2>
+      <h3><i>TOTAL PACKETS</i></h3>
+    </div>
+  </a>
+  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1" id="total_scan">{{result_scan|length}}</h5>
+      <h6 class="text-muted">SCAN PACKET</h6>
+    </div>
+    <p class="mb-1">Quét (Scanning) là một bước tiếp theo trong tiến trình tấn công hệ
+thống. Giai đoạn này giúp chúng ta xác định được nhiều thông tin của mục tiêu cần
+tấn công.</p>
+  </a>
+  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1" id="total_flood">{{result_flood|length}}</h5>
+      <h6 class="text-muted">DDOS PACKET</h6>
+    </div>
+    <p class="mb-1">Tấn công từ chối dịch vụ DoS là cuộc tấn công nhằm làm sập một máy chủ hoặc mạng, khiến người dùng khác không thể truy cập vào máy chủ/mạng đó.</p>
+  </a>
+    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1"  id="total_arp">{{result_arp|length}}</h3>
+      <h6 class="text-muted">ARP PACKET</h6>
+    </div>
+    <p class="mb-1">Trong tấn công ARP Poisoning, kẻ tấn công gửi gói tin ARP giả qua mạng LAN. Swicth sẽ cập nhật địa chỉ MAC của kẻ tấn công với địa chỉ IP của user hoặc server chính thống.</p>
+  </a>
+</div>
       </div>
-
-
-      <div class="row">
-        <div class="col-lg-8">
-
-          <div class="panel panel-default">
-            <div class="panel-heading">Biểu đồ</div>
-            <div class="panel-body">
-              <div id="line-chart" style="height:250px;"></div>
-            </div>
-        </div>
-
-        </div>
         <div class="col-lg-4">
 
          
             <div class="panel panel-default">
               <div class="panel-heading">Pie Chart</div>
               <div class="panel-body">
-                <div id="pie-chart" style="height:250px;"></div>
+                <div id="pie-chart" style="height:448px;"></div>
               </div>
             </div>
           </div>
 
         </div>
-      </div>
+
 
       <!---------->
       <div class="row">
@@ -193,9 +192,10 @@
                           <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">IP NGUỒN</th>
                           <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">IP ĐÍCH
                           </th>
-                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">PORT
-                            NGUỒN</th>
-                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">PORT ĐÍCH
+                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                            PORT
+                          </th>
+                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">SERVICE
                           </th>
                           <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">KIỂU TẤN
                             CÔNG</th>
@@ -205,110 +205,30 @@
                         </tr>
                       </thead>
                       <tbody>
+                        {% for row in result_scan %}
+                        {% if row.service|d('', true) %}
                         <tr>
                           <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
+                            <span class="text-xs font-weight-bold">{{row.attack_ip}}</span>
                           </td>
                           <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
+                            <span class="text-xs font-weight-bold">{{row.victim_ip}}</span>
                           </td>
                           <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
+                            <span class="text-xs font-weight-bold">{{row.port}}</span>
                           </td>
                           <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
+                            <span class="text-xs font-weight-bold">{{row.service}}</span>
                           </td>
                           <td>
-                            <span class="text-xs font-weight-bold">DDOS</span>
+                            <span class="text-xs font-weight-bold">SCANING</span>
                           </td>
                           <td>
-                            <span class="text-xs font-weight-bold">19:00:30</span>
+                            <span class="text-xs font-weight-bold">19:12:42</span>
                           </td>
                         </tr>
-
-                        <tr>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">DDOS</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">19:00:30</span>
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">DDOS</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">19:00:30</span>
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">DDOS</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">19:00:30</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">192.168.XXX.XXX</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">DDOS</span>
-                          </td>
-                          <td>
-                            <span class="text-xs font-weight-bold">19:00:30</span>
-                          </td>
-                        </tr>
-
+                      {% endif %}
+                      {%endfor%}
                       </tbody>
                     </table>
                   </div>

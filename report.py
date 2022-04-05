@@ -7,8 +7,7 @@ import json
 from datetime import datetime
 from types import SimpleNamespace
 import os
-from prexview import PrexView
-
+import pdfkit
 
 # def CreatePDF(atkType):
 #     link = ""
@@ -99,28 +98,3 @@ from prexview import PrexView
 
 # CreatePDF("scan")
 
-
-pxv = PrexView();
-
-options = {'template': 'supported_languages', 'output': 'pdf'}
-
-json = {
-  'languages': [
-    {'code': 'en', 'name': 'English'},
-    {'code': 'es', 'name': 'Español'},
-    {'code': 'fr', 'name': 'Française'}
-  ]
-}
-
-file = 'test.pdf'
-
-try:
-  res = pxv.sendJSON(json, options)
-
-  with open(file, 'wb') as f:
-    f.write(res['file'])
-    f.close()
-
-  print("File created:", file)
-except Exception as e:
-  print(str(e))

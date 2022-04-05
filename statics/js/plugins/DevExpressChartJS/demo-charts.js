@@ -4,12 +4,12 @@ Simple Bar Chart
 
 $("#bar-chart").dxChart({
     dataSource: [
-        {day: "Mon", oranges: 3},
-        {day: "Tue", oranges: 2},
-        {day: "Wed", oranges: 3},
+        {day: "1", oranges: 3},
+        {day: "2", oranges: 2},
+        {day: "3", oranges: 3},
         {day: "Thu", oranges: 4},
         {day: "Fri", oranges: 6},
-        {day: "Sat", oranges: 11},
+        {day: "Sat", oranges: 1000},
         {day: "Sun", oranges: 4} ],
 	valueAxis:{
 		grid:{
@@ -273,25 +273,24 @@ Line Chart
 
 $("#line-chart").dxChart({
     dataSource: [
-		{ year: 1950, europe: 546, americas: 332, africa: 227 },
-		{ year: 1960, europe: 605, americas: 417, africa: 283 },
-		{ year: 1970, europe: 656, americas: 513, africa: 361 },
-		{ year: 1980, europe: 694, americas: 614, africa: 471 },
-		{ year: 1990, europe: 721, americas: 721, africa: 623 },
-		{ year: 2000, europe: 730, americas: 836, africa: 797 },
-		{ year: 2010, europe: 728, americas: 935, africa: 982 },
-		{ year: 2020, europe: 721, americas: 1027, africa: 1189 },
-		{ year: 2030, europe: 704, americas: 1110, africa: 1416 },
-		{ year: 2040, europe: 680, americas: 1178, africa: 1665 },
-		{ year: 2050, europe: 650, americas: 1231, africa: 1937 }
+		{ year: 1, scan: 546, flood: 332, arp: 227 },
+		{ year: 2, scan: 605, flood: 417, arp: 283 },
+		{ year: 3, scan: 656, flood: 513, arp: 361 },
+		{ year: 4, scan: 694, flood: 614, arp: 471 },
+		{ year: 5, scan: 721, flood: 721, arp: 623 },
+		{ year: 6, scan: 730, flood: 836, arp: 797 },
+		{ year: 7, scan: 728, flood: 935, arp: 982 },
+		{ year: 8, scan: 721, flood: 1027, arp: 1189 },
+		{ year: 9, scan: 704, flood: 1110, arp: 1416 },
+		{ year: 10, scan: 680, flood: 1178, arp: 1665 },
 	],
     commonSeriesSettings: {
         argumentField: "year"
     },
     series: [
-        { valueField: "europe", name: "Europe", color: "#27c24c" },
-        { valueField: "americas", name: "Americas", color: "#fad733" },
-        { valueField: "africa", name: "Africa", color: "#f05050" }
+        { valueField: "scan", name: "SCAN", color: "#6bb802" },
+        { valueField: "flood", name: "FLOOD", color: "#fbd005" },
+        { valueField: "arp", name: "ARP", color: "#ff6264" }
     ],
     tooltip:{
         enabled: true,
@@ -389,19 +388,14 @@ Pie Chart
 
 $("#pie-chart").dxPieChart({
     dataSource: [
-				  { country: "USA", medals: 110 },
-				  { country: "China", medals: 100 },
-				  { country: "Russia", medals: 72 },
-				  { country: "Britain", medals: 47 },
-				  { country: "Australia", medals: 46 },
-				  { country: "Germany", medals: 41 },
-				  { country: "France", medals: 40 },
-				  { country: "South Korea", medals: 31 }
+				  { country: "scan", medals: parseInt($("#total_scan").html()) },	//blue
+				  { country: "flood", medals: parseInt($("#total_flood").html()) },	//red
+				  { country: "arp", medals: parseInt($("#total_arp").html()) }, //yellow
 				],
     legend: {
 		visible: false
     },
-	palette: ["#6bb802", "#7c37c3", "#0861ce", "#fbd005", "#4fcdfc", "#00b19d", "#ff6264"],
+	palette: ["#6bb802", "#fbd005", "#ff6264"],
     series: [{
         argumentField: "country",
         valueField: "medals",

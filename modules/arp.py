@@ -87,7 +87,7 @@ def send_to_gateway(src_mac,fake_src_ip,des_mac,des_ip, json_vars):
     print("========================================================== Send ARP reply to Gateway =========================================================")
     print("==============================================================================================================================================")
     json_vars.append(Json_Parse(src_mac, fake_src_ip, des_mac, des_ip))
-    write_json(json_vars,"test.json")
+    write_json(json_vars,"poisoning_temp.json")
 
     while 1:
         send_arp(binascii.unhexlify(src_mac.replace(':', '')),fake_src_ip,binascii.unhexlify(des_mac.replace(':', '')),des_ip)

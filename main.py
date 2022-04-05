@@ -16,7 +16,13 @@ templates = Jinja2Templates(directory="templates")
 @app.get("/")
 @app.get("/index.html")
 async def read_root(request: Request, response_class=HTMLResponse ):
-    return templates.TemplateResponse("index.html", {"request": request})
+    result_scan = read_json_file(file_name= 'log/scan_temp.json')
+    result_flood = read_json_file(file_name= 'log/flood_temp.json')
+    result_arp = read_json_file(file_name= 'log/poisoning_temp.json')
+    count_scan = len(result_scan)
+    count_flood = len(result_flood)
+    count_arp = len(result_arp)
+    return templates.TemplateResponse("index.html", {"request": request, "result_scan": result_scan, "result_flood": result_flood, "result_arp": result_arp})
 
 @app.get("/network", response_class=HTMLResponse)
 @app.get("/network.html", response_class=HTMLResponse)
@@ -40,12 +46,11 @@ async def read_scan(item: ScanConfig, request: Request):
 @app.post("/pentest/flood")
 async def read_flood(item: FloodConfig, request: Request):
     cmd = "cd modules; sudo python3 socket_flood.py --dstIp 192.168.133.142 --dstPort 7000 --delay 1000 --thread 1000"
-    syntax = "cd modules; sudo python3 socket_flood.py --dstIp " + item.dst_ip+ " --dstPort "+ item.dst_port + " --delay " + item.delay + " --thread " + item.thread
-    os.system(cmd)
-    response = RedirectResponse('/result/arp', status_code=303)
+    syntax = "cd modules; sudo python3 socket_flood.py --dstIp" + item.dst_ip + "--dstPort"+ item.dst_port + "--delay" + item.delay + "--thread" + item.thread
+    # os.system(cmd)
+    response = RedirectResponse('/result/flood', status_code=303)
     # print(json_data)
-    return response
-
+    return response 
 
 @app.post("/pentest/arp")
 async def read_arp(item: ArpConfig, request: Request):
