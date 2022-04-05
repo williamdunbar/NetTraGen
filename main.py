@@ -40,16 +40,12 @@ async def read_scan(item: ScanConfig, request: Request):
 @app.post("/pentest/flood")
 async def read_flood(item: FloodConfig, request: Request):
     cmd = "cd modules; sudo python3 socket_flood.py --dstIp 192.168.133.142 --dstPort 7000 --delay 1000 --thread 1000"
-<<<<<<< HEAD
     syntax = "cd modules; sudo python3 socket_flood.py --dstIp " + item.dst_ip+ " --dstPort "+ item.dst_port + " --delay " + item.delay + " --thread " + item.thread
     os.system(cmd)
-=======
-    syntax = "cd modules; sudo python3 socket_flood.py --dstIp" + item.dst_ip + "--dstPort"+ item.dst_port + "--delay" + item.delay + "--thread" + item.thread
-    # os.system(cmd)
->>>>>>> origin
-    response = RedirectResponse('/result/flood', status_code=303)
+    response = RedirectResponse('/result/arp', status_code=303)
     # print(json_data)
-    return response 
+    return response
+
 
 @app.post("/pentest/arp")
 async def read_arp(item: ArpConfig, request: Request):
