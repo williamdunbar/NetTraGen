@@ -1,3 +1,4 @@
+import email
 from fastapi import FastAPI, File, UploadFile, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -6,8 +7,8 @@ from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 import os
 import json
-from model import ScanConfig, FloodConfig, ArpConfig
-
+from model import ScanConfig, FloodConfig, ArpConfig, SendMail
+from sendmail import send_mail_file, send_mail_text
 
 app =FastAPI()
 app.mount("/statics", StaticFiles(directory="statics", html=True), name="statics")
@@ -99,6 +100,16 @@ def read_json_file(file_name):
 @app.get("/report.html")
 async def read_network(request: Request):
     return templates.TemplateResponse("report.html",{"request": request})
+
+@app.post("/report/sendmail")
+def send_email_report(item : SendMail):
+    response = RedirectResponse('/report', status_code=303)
+    print (item.email)
+    print (item.subject)
+    print(item.filename)
+    print (item.filepath)
+    send_mail_file(item.email, item.subject, item.filename, item.filepath)
+    return response
 
 @app.get("/console")
 @app.get("/console.html")

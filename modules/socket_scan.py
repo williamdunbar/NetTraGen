@@ -9,7 +9,7 @@ from queue import Queue
 import json
 import os
 from datetime import datetime
-
+from report import CreatePDF
 
 class IpTcpAssembler:
     def __init__(self, src_ip, dest_ip, dest_port, method):
@@ -319,9 +319,11 @@ def threader_receiver(json_vars):
                         json_vars.append(Json_Parse(str(myreceive.rc_src_port),'','Open',str(myreceive.rc_src_ip),str(myreceive.rc_dst_ip),str(myreceive.fin),str(myreceive.syn),str(myreceive.rst),str(myreceive.ack)))
 
     
-    current_time = datetime.now().strftime("%H:%M_%m-%d-%Y")
-    write_json(json_vars,"scan_"+current_time+".json")
+    # current_time = datetime.now().strftime("%H:%M_%m-%d-%Y")
+    # write_json(json_vars,"scan_"+current_time+".json")
     write_json(json_vars,"scan_temp.json")
+    CreatePDF('scan')
+
 
 def UserInput():
     #Cài đặt tham số khi dùng trên terminal

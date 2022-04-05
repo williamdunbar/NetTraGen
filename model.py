@@ -22,3 +22,10 @@ class ArpConfig(BaseModel):
     gw_mac : str
     vt_ip : str
     gw_ip : str
+
+
+class SendMail(BaseModel):
+    email : str
+    subject : str
+    filename : str
+    filepath : str

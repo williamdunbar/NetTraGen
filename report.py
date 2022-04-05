@@ -26,9 +26,10 @@ def CreatePDF(atkType):
     index = 1
     if(atkType == 'scan'):
         link = "log/scan_temp.json"
+        data = [['Time', 'Source Address', 'Source Port','Destination Address', 'Destination Port', "Attack Type"]]
     elif(atkType == 'flood'):
         link = "log/flood_temp.json"
-    
+        data = [['Id','Time', 'Destination Address', 'Scanned Port', 'Service', 'State' ,"Attack Type"]]
     json_data = read_json_file(link)
     for line in json_data:
       print(line)
@@ -36,10 +37,10 @@ def CreatePDF(atkType):
       # print(temp)
       # time = str(date_time_obj.hour) + ":" + str(date_time_obj.minute) + ":" + str(date_time_obj.second)
       if atkType == 'flood':
-        data = [['Time', 'Source Address', 'Source Port','Destination Address', 'Destination Port', "Attack Type"]]
+        
         data.append([date_time_obj, line["src_ip"], line["src_port"],line["des_ip"], line["des_port"], "syn flood"])
       elif atkType == 'scan':
-        data = [['Id','Time', 'Destination Address', 'Scanned Port', 'Service', 'State' ,"Attack Type"]]
+        
         data.append([index,date_time_obj, line["victim_ip"], line["port"],line["service"], line["state"], "syn scan"])
             # Ktra cac dieu kien
       index += 1
@@ -96,14 +97,12 @@ def CreatePDF(atkType):
     #     os.remove("report/" + filename)
     #     return
     pdf = SimpleDocTemplate(
-        "statics/docs/report/" + filename,
+        "statics/docs/" + filename,
         pagesize=A4
     )
     pdf.build(elems)
     return filename
 
 
-# def
+# CreatePDF("scan")
 
-
-CreatePDF("scan")

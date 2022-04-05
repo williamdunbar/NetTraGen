@@ -1,3 +1,4 @@
+import imp
 from json.tool import main
 from socket import *
 from struct import *
@@ -12,7 +13,7 @@ import random
 import struct
 from turtle import delay
 from datetime import datetime
-
+from report import CreatePDF
 
 class FloodPacketAssembler:
     def __init__(self, src_ip, dest_ip, source_port , dest_port):
@@ -316,6 +317,7 @@ if __name__ == '__main__':
         ts = threading.Thread(target=threader_sender, daemon=True, args=(json_vars,x))  # classifying as a daemon, so they will die when the main dies
         ts.start()
 
-    current_time = datetime.now().strftime("%H:%M_%m-%d-%Y")
-    write_json(json_vars,"flood_"+current_time+".json")
+    # current_time = datetime.now().strftime("%H:%M_%m-%d-%Y")
+    # write_json(json_vars,"flood_"+current_time+".json")
     write_json(json_vars, "flood_temp.json")
+    CreatePDF('flood')
