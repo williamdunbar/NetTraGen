@@ -4,7 +4,7 @@ $(document).ready(function(){
         var condition2 = $("#attack-type").val()
         if(condition1 == "scan"){
             e.preventDefault();
-            ScanConfig(condition2);
+            ScanConfig(condition2); 
         } 
         else if(condition1 == "flood"){
             console.log("Flood")

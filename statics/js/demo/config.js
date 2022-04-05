@@ -70,9 +70,11 @@ function FloodConfig(flood_type){
         }), 
         success: function(){
             console.log("Success")
+            console.log(data)
             window.location.replace("/result/flood")        
         },
         error: function(){
+            console.log(data)
             console.log("Error!")
             window.location.replace("/result/flood")            
         }
