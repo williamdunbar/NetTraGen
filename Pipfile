@@ -9,6 +9,7 @@ uvicorn = "*"
 motor = "*"
 Jinja2 = "*"
 reportlab = "*"
+prexview = "*"
 
 [dev-packages]
 
