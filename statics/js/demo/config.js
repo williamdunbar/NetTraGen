@@ -63,7 +63,7 @@ function FloodConfig(flood_type){
         dataType: "json",
         contentType: "application/json",
         data: JSON.stringify({
-            src_ip : $("#dst_IP").val(),
+            dst_ip : $("#dst_IP").val(),
             dst_port : $("#dst_port").val(),
             delay : $("#delay").val(),
             thread : $("#thread").val()

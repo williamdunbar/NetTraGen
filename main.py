@@ -40,7 +40,7 @@ async def read_scan(item: ScanConfig, request: Request):
 @app.post("/pentest/flood")
 async def read_scan(item: FloodConfig, request: Request):
     cmd = "cd modules; sudo python3 socket_flood.py --dstIp 192.168.133.142 --dstPort 7000 --delay 1000 --thread 1000"
-    syntax = "cd modules; sudo python3 socket_flood.py --dstIp" + item.dst_ip+ "--dstPort"+ item.dst_port + "--delay" + item.delay + "--thread" + item.thread
+    syntax = "cd modules; sudo python3 socket_flood.py --dstIp " + item.dst_ip+ " --dstPort "+ item.dst_port + " --delay " + item.delay + " --thread " + item.thread
     os.system(cmd)
     response = RedirectResponse('/result/flood', status_code=303)
     # print(json_data)
@@ -74,7 +74,7 @@ async def read_result_scan(request: Request ):
 @app.get("/result/flood", response_class=HTMLResponse)
 async def read_result_scan(request: Request ):
     result = read_json_file(file_name= 'log/flood_temp.json')
-    print(result)
+    # print(result)
     # return result
     return templates.TemplateResponse("result_flood.html", {"request": request, "data": result}) 
  

@@ -1,8 +1,6 @@
 from concurrent.futures import thread
 from pydantic import BaseModel
 
-
-
 class ScanConfig(BaseModel):
     type : str
     src_ip : str
@@ -14,7 +12,7 @@ class ScanConfig(BaseModel):
 
 class FloodConfig(BaseModel):
     dst_ip: str
-    dst_port: str
+    dst_port: int
     delay: int
     thread: int
 

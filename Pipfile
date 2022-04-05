@@ -8,6 +8,7 @@ fastapi = "*"
 uvicorn = "*"
 motor = "*"
 Jinja2 = "*"
+reportlab = "*"
 
 [dev-packages]
 
