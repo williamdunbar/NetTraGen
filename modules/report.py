@@ -18,17 +18,16 @@ from datetime import datetime
 from types import SimpleNamespace
 import os
 
-from main import read_json_file
 
 
 def CreatePDF(atkType):
     link = ""
     index = 1
     if(atkType == 'scan'):
-        link = "log/scan_temp.json"
-        data = [['Time', 'Source Address', 'Source Port','Destination Address', 'Destination Port', "Attack Type"]]
+        link = "../log/scan_temp.json"
+        data = [['Id','Time', 'Source Address', 'Source Port','Destination Address', 'Destination Port', "Attack Type"]]
     elif(atkType == 'flood'):
-        link = "log/flood_temp.json"
+        link = "../log/flood_temp.json"
         data = [['Id','Time', 'Destination Address', 'Scanned Port', 'Service', 'State' ,"Attack Type"]]
     json_data = read_json_file(link)
     for line in json_data:
@@ -38,7 +37,7 @@ def CreatePDF(atkType):
       # time = str(date_time_obj.hour) + ":" + str(date_time_obj.minute) + ":" + str(date_time_obj.second)
       if atkType == 'flood':
         
-        data.append([date_time_obj, line["src_ip"], line["src_port"],line["des_ip"], line["des_port"], "syn flood"])
+        data.append([index,date_time_obj, line["src_ip"], line["src_port"],line["dst_ip"], line["dst_port"], "syn flood"])
       elif atkType == 'scan':
         
         data.append([index,date_time_obj, line["victim_ip"], line["port"],line["service"], line["state"], "syn scan"])
@@ -92,12 +91,12 @@ def CreatePDF(atkType):
     elems.append(date)
     elems.append(table)
 
-    filename = str(datetime.now().date()) + ".pdf"
+    filename = atkType +"_"+ str(datetime.now().date()) + ".pdf"
     # if os.path.isfile("report/" + filename):
     #     os.remove("report/" + filename)
     #     return
     pdf = SimpleDocTemplate(
-        "statics/docs/" + filename,
+        "../statics/docs/" + filename,
         pagesize=A4
     )
     pdf.build(elems)
@@ -105,4 +104,9 @@ def CreatePDF(atkType):
 
 
 # CreatePDF("scan")
+
+def read_json_file(file_name):
+    with open(file_name) as opened_file:
+        json_data = json.load(opened_file)
+        return json_data
 

@@ -1,4 +1,3 @@
-import imp
 from json.tool import main
 from socket import *
 from struct import *
